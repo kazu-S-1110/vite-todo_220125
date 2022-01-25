@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 type Todo = {
   value: string;
+  readonly id: number;
 };
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
 
     const newTodo: Todo = {
       value: text,
+      id: new Date().getTime(),
     };
 
     setTodos([newTodo, ...todos]);
@@ -22,6 +24,9 @@ function App() {
       inputEl.current.focus();
     }
   };
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setText(e.target.value);
 
   useEffect(() => {}, []);
 
@@ -38,15 +43,15 @@ function App() {
           ref={inputEl}
           type="text"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => handleOnChange(e)}
         />
         <input type="submit" value="add" onSubmit={handleOnSubmit} />
       </form>
       {todos?.map((todo, index) => {
         return (
-          <p key={todo.value}>
+          <li key={todo.id}>
             {index} {todo.value}
-          </p>
+          </li>
         );
       })}
     </div>
