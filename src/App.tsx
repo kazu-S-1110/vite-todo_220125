@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Todo = {
   value: string;
@@ -6,6 +6,7 @@ type Todo = {
 
 function App() {
   const [text, setText] = useState('');
+  const inputEl = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const handleOnSubmit = () => {
@@ -17,7 +18,12 @@ function App() {
 
     setTodos([newTodo, ...todos]);
     setText('');
+    if (inputEl && inputEl.current) {
+      inputEl.current.focus();
+    }
   };
+
+  useEffect(() => {}, []);
 
   return (
     <div>
@@ -29,6 +35,7 @@ function App() {
         }}
       >
         <input
+          ref={inputEl}
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
