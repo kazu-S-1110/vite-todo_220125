@@ -12,13 +12,12 @@ function App() {
 
   const handleOnSubmit = () => {
     if (!text) return;
-
     const newTodo: Todo = {
       value: text,
       id: new Date().getTime(),
     };
 
-    setTodos([newTodo, ...todos]);
+    setTodos([...todos, newTodo]);
     setText('');
     if (inputEl && inputEl.current) {
       inputEl.current.focus();
@@ -28,7 +27,15 @@ function App() {
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) =>
     setText(e.target.value);
 
-  useEffect(() => {}, []);
+  const handleOnEdit = (id: number, value: string) => {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        todo.value = value;
+      }
+      return todo;
+    });
+    setTodos(newTodos);
+  };
 
   return (
     <div>
@@ -50,7 +57,12 @@ function App() {
       {todos?.map((todo, index) => {
         return (
           <li key={todo.id}>
-            {index} {todo.value}
+            {index + 1}{' '}
+            <input
+              type="text"
+              value={todo.value}
+              onChange={(e) => handleOnEdit(todo.id, e.target.value)}
+            />
           </li>
         );
       })}
