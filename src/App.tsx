@@ -28,12 +28,19 @@ function App() {
     setText(e.target.value);
 
   const handleOnEdit = (id: number, value: string) => {
-    const newTodos = todos.map((todo) => {
+    // ディープコピーしてメモリ空間を確保。元の配列のイミュータビリティを確保
+    const deepCopy = todos.map((todo) => ({ ...todo }));
+    const newTodos = deepCopy.map((todo) => {
       if (todo.id === id) {
         todo.value = value;
       }
       return todo;
     });
+
+    // todos ステート配列をチェック（あとでコメントアウト）
+    console.log('=== Original todos ===');
+    todos.map((todo) => console.log(`id: ${todo.id}, value: ${todo.value}`));
+
     setTodos(newTodos);
   };
 
