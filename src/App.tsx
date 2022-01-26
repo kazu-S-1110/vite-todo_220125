@@ -3,6 +3,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 type Todo = {
   value: string;
   readonly id: number;
+  checked: boolean;
 };
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
     const newTodo: Todo = {
       value: text,
       id: new Date().getTime(),
+      checked: false,
     };
 
     setTodos([...todos, newTodo]);
@@ -44,6 +46,18 @@ function App() {
     setTodos(newTodos);
   };
 
+  const handleOnCheck = (id: number, checked: boolean) => {
+    const deepCopy = todos.map((todo) => ({ ...todo }));
+
+    const newTodos = deepCopy.map((todo) => {
+      if (todo.id === id) {
+        todo.checked = !checked;
+      }
+      return todo;
+    });
+    setTodos(newTodos);
+  };
+
   return (
     <div>
       <form
@@ -64,9 +78,15 @@ function App() {
       {todos?.map((todo, index) => {
         return (
           <li key={todo.id}>
+            <input
+              type="checkbox"
+              checked={todo.checked}
+              onChange={() => handleOnCheck(todo.id, todo.checked)}
+            />
             {index + 1}{' '}
             <input
               type="text"
+              disabled={todo.checked}
               value={todo.value}
               onChange={(e) => handleOnEdit(todo.id, e.target.value)}
             />
