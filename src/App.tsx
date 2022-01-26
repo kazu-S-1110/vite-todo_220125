@@ -4,6 +4,7 @@ type Todo = {
   value: string;
   readonly id: number;
   checked: boolean;
+  removed: boolean;
 };
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       value: text,
       id: new Date().getTime(),
       checked: false,
+      removed: false,
     };
 
     setTodos([...todos, newTodo]);
@@ -58,6 +60,19 @@ function App() {
     setTodos(newTodos);
   };
 
+  const handleOnRemove = (id: number, removed: boolean) => {
+    const deepCopy = todos.map((todo) => ({ ...todo }));
+
+    const newTodos = deepCopy.map((todo) => {
+      if (todo.id === id) {
+        todo.removed = !removed;
+      }
+      return todo;
+    });
+
+    setTodos(newTodos);
+  };
+
   return (
     <div>
       <form
@@ -80,16 +95,20 @@ function App() {
           <li key={todo.id}>
             <input
               type="checkbox"
+              disabled={todo.removed}
               checked={todo.checked}
               onChange={() => handleOnCheck(todo.id, todo.checked)}
             />
             {index + 1}{' '}
             <input
               type="text"
-              disabled={todo.checked}
+              disabled={todo.checked || todo.removed}
               value={todo.value}
               onChange={(e) => handleOnEdit(todo.id, e.target.value)}
             />
+            <button onClick={() => handleOnRemove(todo.id, todo.removed)}>
+              {todo.removed ? '復元' : 'アーカイブ'}
+            </button>{' '}
           </li>
         );
       })}
