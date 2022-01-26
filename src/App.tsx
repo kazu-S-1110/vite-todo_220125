@@ -7,10 +7,13 @@ type Todo = {
   removed: boolean;
 };
 
+type Filter = 'all' | 'checked' | 'unchecked' | 'archived';
+
 function App() {
   const [text, setText] = useState('');
   const inputEl = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<Filter>('all');
 
   const handleOnSubmit = () => {
     if (!text) return;
@@ -73,8 +76,33 @@ function App() {
     setTodos(newTodos);
   };
 
+  const filteredTodos = todos.filter((todo) => {
+    switch (filter) {
+      case 'all':
+        return !todo.removed;
+      case 'checked':
+        return todo.checked && !todo.removed;
+      case 'unchecked':
+        return !todo.checked && !todo.removed;
+      case 'archived':
+        return todo.removed;
+      default:
+        return todo;
+    }
+  });
+
   return (
     <div>
+      <select
+        defaultValue="all"
+        // e.target.value: string を Filter 型にキャストする
+        onChange={(e) => setFilter(e.target.value as Filter)}
+      >
+        <option value="all">すべてのタスク</option>
+        <option value="checked">完了したタスク</option>
+        <option value="unchecked">現在のタスク</option>
+        <option value="archived">アーカイブ</option>
+      </select>
       <form
         onSubmit={(e) => {
           // <form> タグの中でいったん e.preventDefault() しているのは Enter キー打鍵でページそのものがリロードされてしまうのを防ぐため
@@ -86,11 +114,17 @@ function App() {
           ref={inputEl}
           type="text"
           value={text}
+          disabled={filter === 'checked' || filter === 'archived'}
           onChange={(e) => handleOnChange(e)}
         />
-        <input type="submit" value="add" onSubmit={handleOnSubmit} />
+        <input
+          type="submit"
+          disabled={filter === 'checked' || filter === 'archived'}
+          value="add"
+          onSubmit={handleOnSubmit}
+        />
       </form>
-      {todos?.map((todo, index) => {
+      {filteredTodos?.map((todo) => {
         return (
           <li key={todo.id}>
             <input
@@ -99,7 +133,6 @@ function App() {
               checked={todo.checked}
               onChange={() => handleOnCheck(todo.id, todo.checked)}
             />
-            {index + 1}{' '}
             <input
               type="text"
               disabled={todo.checked || todo.removed}
