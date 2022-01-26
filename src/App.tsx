@@ -91,6 +91,12 @@ function App() {
     }
   });
 
+  const handleOnEmpty = () => {
+    // シャローコピーで事足りる
+    const newTodos = todos.filter((todo) => !todo.removed);
+    setTodos(newTodos);
+  };
+
   return (
     <div>
       <select
@@ -103,46 +109,57 @@ function App() {
         <option value="unchecked">現在のタスク</option>
         <option value="archived">アーカイブ</option>
       </select>
-      <form
-        onSubmit={(e) => {
-          // <form> タグの中でいったん e.preventDefault() しているのは Enter キー打鍵でページそのものがリロードされてしまうのを防ぐため
-          e.preventDefault();
-          handleOnSubmit();
-        }}
-      >
-        <input
-          ref={inputEl}
-          type="text"
-          value={text}
-          disabled={filter === 'checked' || filter === 'archived'}
-          onChange={(e) => handleOnChange(e)}
-        />
-        <input
-          type="submit"
-          disabled={filter === 'checked' || filter === 'archived'}
-          value="add"
-          onSubmit={handleOnSubmit}
-        />
-      </form>
+      {filter === 'archived' ? (
+        <button
+          onClick={handleOnEmpty}
+          disabled={todos.filter((todo) => todo.removed).length === 0}
+        >
+          アーカイブ全削除
+        </button>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            // <form> タグの中でいったん e.preventDefault() しているのは Enter キー打鍵でページそのものがリロードされてしまうのを防ぐため
+            e.preventDefault();
+            handleOnSubmit();
+          }}
+        >
+          <input
+            ref={inputEl}
+            type="text"
+            value={text}
+            disabled={filter === 'checked'}
+            onChange={(e) => handleOnChange(e)}
+          />
+          <input
+            type="submit"
+            disabled={filter === 'checked'}
+            value="add"
+            onSubmit={handleOnSubmit}
+          />
+        </form>
+      )}
       {filteredTodos?.map((todo) => {
         return (
-          <li key={todo.id}>
-            <input
-              type="checkbox"
-              disabled={todo.removed}
-              checked={todo.checked}
-              onChange={() => handleOnCheck(todo.id, todo.checked)}
-            />
-            <input
-              type="text"
-              disabled={todo.checked || todo.removed}
-              value={todo.value}
-              onChange={(e) => handleOnEdit(todo.id, e.target.value)}
-            />
-            <button onClick={() => handleOnRemove(todo.id, todo.removed)}>
-              {todo.removed ? '復元' : 'アーカイブ'}
-            </button>{' '}
-          </li>
+          <ul>
+            <li key={todo.id}>
+              <input
+                type="checkbox"
+                disabled={todo.removed}
+                checked={todo.checked}
+                onChange={() => handleOnCheck(todo.id, todo.checked)}
+              />
+              <input
+                type="text"
+                disabled={todo.checked || todo.removed}
+                value={todo.value}
+                onChange={(e) => handleOnEdit(todo.id, e.target.value)}
+              />
+              <button onClick={() => handleOnRemove(todo.id, todo.removed)}>
+                {todo.removed ? '復元' : 'アーカイブ'}
+              </button>{' '}
+            </li>
+          </ul>
         );
       })}
     </div>
