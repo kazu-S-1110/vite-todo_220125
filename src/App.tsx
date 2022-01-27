@@ -9,7 +9,7 @@ type Todo = {
   removed: boolean;
 };
 
-type Filter = 'all' | 'checked' | 'unchecked' | 'archived';
+type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -39,7 +39,7 @@ function App() {
   };
 
   const handleOnFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch({ type: 'filter', value: e.target.value as Filter });
+    dispatch({ type: 'filter', filter: e.target.value as Filter });
   };
 
   const filteredTodos = state.todos.filter((todo) => {
@@ -50,7 +50,7 @@ function App() {
         return todo.checked && !todo.removed;
       case 'unchecked':
         return !todo.checked && !todo.removed;
-      case 'archived':
+      case 'removed':
         return todo.removed;
       default:
         return todo;
@@ -67,14 +67,14 @@ function App() {
         <option value="all">すべてのタスク</option>
         <option value="checked">完了したタスク</option>
         <option value="unchecked">現在のタスク</option>
-        <option value="archived">アーカイブ</option>
+        <option value="removed">ゴミ箱</option>
       </select>
-      {state.filter === 'archived' ? (
+      {state.filter === 'removed' ? (
         <button
           onClick={handleOnEmpty}
           disabled={state.todos.filter((todo) => todo.removed).length === 0}
         >
-          アーカイブ全削除
+          ゴミ箱を空にする
         </button>
       ) : (
         <form
@@ -99,9 +99,9 @@ function App() {
           />
         </form>
       )}
-      {filteredTodos?.map((todo) => {
-        return (
-          <ul>
+      <ul>
+        {filteredTodos?.map((todo) => {
+          return (
             <li key={todo.id}>
               <input
                 type="checkbox"
@@ -116,12 +116,12 @@ function App() {
                 onChange={(e) => handleOnEdit(todo.id, e.target.value)}
               />
               <button onClick={() => handleOnRemove(todo.id, todo.removed)}>
-                {todo.removed ? '復元' : 'アーカイブ'}
+                {todo.removed ? '復元' : '削除'}
               </button>{' '}
             </li>
-          </ul>
-        );
-      })}
+          );
+        })}
+      </ul>
     </div>
   );
 }

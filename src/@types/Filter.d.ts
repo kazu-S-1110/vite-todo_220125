@@ -1,1 +1,1 @@
-declare type Filter = 'all' | 'checked' | 'unchecked' | 'archived';
+declare type Filter = 'all' | 'checked' | 'unchecked' | 'removed';
