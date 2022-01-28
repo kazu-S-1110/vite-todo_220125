@@ -1,18 +1,15 @@
-import { Dispatch, memo, useRef } from 'react';
+import { Dispatch, memo, useContext, useRef } from 'react';
+import { AppContext } from './AppContext';
 
-type Props = {
-  state: State;
-  dispatch: Dispatch<Action>;
-};
-
-export const Form = memo((props: Props) => {
+export const Form = memo(() => {
+  const { state, dispatch } = useContext(AppContext);
   const inputEl = useRef<HTMLInputElement>(null);
   const handleOnSubmit = () => {
-    props.dispatch({ type: 'submit' });
+    dispatch({ type: 'submit' });
   };
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    props.dispatch({ type: 'change', text: e.target.value });
+    dispatch({ type: 'change', text: e.target.value });
   };
 
   return (
@@ -26,13 +23,13 @@ export const Form = memo((props: Props) => {
       <input
         ref={inputEl}
         type="text"
-        disabled={props.state.filter === 'checked'}
-        value={props.state.text}
+        disabled={state.filter === 'checked'}
+        value={state.text}
         onChange={handleOnChange}
       />
       <input
         type="submit"
-        disabled={props.state.filter === 'checked'}
+        disabled={state.filter === 'checked'}
         value="追加"
         onSubmit={handleOnSubmit}
       />
